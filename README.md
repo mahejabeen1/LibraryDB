@@ -4,7 +4,7 @@ This library database is designed to manage information about books, authors, bo
 
 Tables
 Authors: Contains information about authors.
-Books: Stores details about each book, including title, author, genre, ISBN, and availability.
+Books: Stores details about each book, including title, author, ISBN, and availability.
 Publishers: Manages data related to book publishers.
 Members: Stores details about library members (borrowers).
 Transactions: Tracks borrowing and returning of books by members.
