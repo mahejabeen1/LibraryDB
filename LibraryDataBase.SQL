@@ -28,3 +28,14 @@ CREATE TABLE Publishers (
     Phone VARCHAR(20)
 );
 
+--AvailableBooks View
+CREATE VIEW AvailableBooks AS
+SELECT * FROM Books WHERE available_copies > 0;
+
+
+--BorrowedBooksView View
+CREATE VIEW BorrowedBooksView AS
+SELECT Members.FirstName, Members.LastName, Books.Title, Transactions.BorrowDate, Transactions.ReturnDate
+FROM Transactions
+JOIN Members ON Transactions.MemberID = Members.MemberID
+JOIN Books ON Transactions.book_id = Books.book_id;
