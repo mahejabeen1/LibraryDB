@@ -7,8 +7,8 @@ SELECT * FROM Books WHERE available_copies > 0;
 
 --Search Books by Title or Author
 SELECT * FROM Books
-WHERE Title LIKE '%search_term%' OR
-      EXISTS (SELECT 1 FROM Authors WHERE Books.author_id = Authors.author_id AND (FirstName LIKE '%search_term%' OR LastName LIKE '%search_term%'));
+WHERE Title LIKE '%The%' OR
+      EXISTS (SELECT 1 FROM Authors WHERE Books.author_id = Authors.author_id AND (FirstName LIKE '%Robert%' OR LastName LIKE '%Brown%'));
 
 --List Borrowed Books and Due Dates
 SELECT Members.FirstName, Members.LastName, Books.Title, Transactions.BorrowDate, Transactions.ReturnDate
