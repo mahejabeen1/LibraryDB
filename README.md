@@ -1,36 +1,35 @@
-Library Database
-Overview
+# Library Database
+## Overview
 This library database is designed to manage information about books, authors, borrowers, and transactions in a library setting. It includes tables for authors, books, publishers, members (borrowers), and transactions. The structure is designed to provide flexibility and scalability for a comprehensive library management system.
 
-Tables
+## Tables
 Authors: Contains information about authors.
 Books: Stores details about each book, including title, author, ISBN, and availability.
 Publishers: Manages data related to book publishers.
 Members: Stores details about library members (borrowers).
 Transactions: Tracks borrowing and returning of books by members.
 
-Usage
-Queries
---Retrieve all books
+## Usage Queries
+
+### Retrieve all books
 SELECT * FROM Books;
 
---Retrieve Available Books
+### Retrieve Available Books
 SELECT * FROM Books WHERE available_copies > 0;
 
-
---Search Books by Title or Author
+### Search Books by Title or Author
 SELECT * FROM Books
 WHERE Title LIKE '%search_term%' OR
       EXISTS (SELECT 1 FROM Authors WHERE Books.author_id = Authors.author_id AND (FirstName LIKE '%search_term%' OR LastName LIKE '%search_term%'));
 
---List Borrowed Books and Due Dates
+### List Borrowed Books and Due Dates
 SELECT Members.FirstName, Members.LastName, Books.Title, Transactions.BorrowDate, Transactions.ReturnDate
 FROM Transactions
 JOIN Members ON Transactions.MemberID = Members.MemberID
 JOIN Books ON Transactions.book_id = Books.book_id
 WHERE Transactions.ReturnDate IS NULL;
 
---Top Borrowed Books
+### Top Borrowed Books
 SELECT Books.Title, COUNT(*) AS BorrowCount
 FROM Transactions
 JOIN Books ON Transactions.book_id = Books.book_id
@@ -38,24 +37,24 @@ GROUP BY Books.Title
 ORDER BY BorrowCount DESC
 LIMIT 5;
 
---AvailableBooks View
+### AvailableBooks View
 CREATE VIEW AvailableBooks AS
 SELECT * FROM Books WHERE available_copies > 0;
 
---BorrowedBooksView View
+### BorrowedBooksView View
 CREATE VIEW BorrowedBooksView AS
 SELECT Members.FirstName, Members.LastName, Books.Title, Transactions.BorrowDate, Transactions.ReturnDate
 FROM Transactions
 JOIN Members ON Transactions.MemberID = Members.MemberID
 JOIN Books ON Transactions.book_id = Books.book_id;
 
-Updating Data
+### Updating Data
 To update data in the database, use standard SQL UPDATE, INSERT, and DELETE statements. For example:
 
--- Update book information
+###  Update book information
 UPDATE Books SET available_copies = 15 WHERE BookID = 1;
 
--- Insert a new member
+###  Insert a new member
 INSERT INTO Members (MemberID, FirstName, LastName, Address, Email)
 VALUES (10, 'New', 'Member', '123 Street, City', 'new@email.com');
 
@@ -100,5 +99,85 @@ VALUES
     (5, 5, 5, '2023-05-10', '2023-05-25'),
     (6, 4, 6, '2023-06-15', NULL);
 
--- Delete a transaction
+###  Delete a transaction
 DELETE FROM Transactions WHERE TransactionID = 3;
+
+
+###  creating view to know how many females are there
+
+create or replace view femalecustomers as
+select * from customer1 where customergender = 'F';
+
+
+
+
+sql dvd challenges
+
+1] alter table film
+add column has_specialfeature int;
+
+1]
+create table film1 (film_id serial primary key,title varchar(255),special_features text);
+insert into film1(film_id,title,special_features) values (1,'academy dinosaur','a'),(2,'ace goldfinger','b'),(3,'adaptation holes','c');
+
+alter table film1
+add column has_special_feature int;
+
+update film1
+set has_special_feature = case when special_features <> 'A' then 1 else 0 end;
+
+insert into film1(film_id, title,special_features) values(4, 'Agent truman',2);
+
+
+
+update film1 set has_special_feature = case when special_features <> 'A' then 1 else 0 end;
+
+
+
+SELECT
+    film_id,
+    title,
+    special_features,
+    ###  Create dummy variables for each kind of special feature
+    CASE WHEN 'Trailers' = ANY (string_to_array(special_features, ',')) THEN 1 ELSE 0 END AS Trailers,
+    CASE WHEN 'Commentaries' = ANY (string_to_array(special_features, ',')) THEN 1 ELSE 0 END AS Commentaries,
+    CASE WHEN 'Deleted Scenes' = ANY (string_to_array(special_features, ',')) THEN 1 ELSE 0 END AS Deleted_Scenes,
+    CASE WHEN 'Behind the Scenes' = ANY (string_to_array(special_features, ',')) THEN 1 ELSE 0 END AS Behind_the_Scenes
+FROM film;
+
+
+
+
+
+
+
+
+
+
+2]SELECT c.name AS category_name, COUNT(r.rental_id) AS rental_count
+FROM category c
+JOIN film_category fc ON c.category_id = fc.category_id
+JOIN film f ON fc.film_id = f.film_id
+JOIN inventory i ON f.film_id = i.film_id
+JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY c.name
+ORDER BY rental_count DESC;
+
+
+
+SELECT name, COUNT(*) 
+FROM category , film_category , inventory , rental 
+WHERE category.category_id=film_category.category_id
+AND film_category.film_id=inventory.film_id
+AND inventory.inventory_id=rental.inventory_id
+Group By category.name
+Order by count(*) Desc;
+compare this to below
+
+SELECT c.name as category_name, COUNT(*) as rental_count 
+FROM category c , film_category fc , inventory i , rental r
+WHERE c.category_id=fc.category_id
+AND fc.film_id=i.film_id
+AND i.inventory_id=r.inventory_id
+Group By c.name
+Order by rental_count Desc;
